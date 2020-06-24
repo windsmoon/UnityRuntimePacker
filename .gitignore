@@ -72,3 +72,7 @@ crashlytics-build.properties
 UnityRuntimePacker/.idea/
 UnityRuntimePacker/Assets/Rider/
 UnityRuntimePacker/Assets/Rider.meta
+UnityRuntimePacker/Library/
+UnityRuntimePacker/Logs/Packages-Update.log
+UnityRuntimePacker/obj/
+UnityRuntimePacker/Temp/
