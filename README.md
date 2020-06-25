@@ -1,2 +1,2 @@
 # UnityRuntimePacker
-a plugin in untiy which pack textures into an atlas in runtime
+a plugin for unity to pack textures into an atlas in runtime
