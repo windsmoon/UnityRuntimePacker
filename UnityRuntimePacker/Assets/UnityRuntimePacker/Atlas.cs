@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Windsmoon.UnityRuntimePacker
@@ -6,10 +7,11 @@ namespace Windsmoon.UnityRuntimePacker
     {
         #region fields
         private RenderTexture rt;
+        private List<Texture2D> textureList;
+        private List<SpriteInfo> spriteInfoList;
         #endregion
 
         #region properties
-
         public RenderTexture Rt
         {
             get { return rt; }

@@ -11,7 +11,6 @@ namespace Windsmoon.UnityRuntimePacker
         #region methods
         public static Atlas GenerateAtlas(List<Texture2D> texture2DList, List<Sprite> spriteList)
         {
-            
             return null;
         }
         #endregion
