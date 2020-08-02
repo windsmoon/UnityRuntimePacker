@@ -7,7 +7,6 @@ namespace Windsmoon.UnityRuntimePacker
     {
         #region fields
         private RenderTexture rt;
-        private List<Texture2D> textureList;
         private List<SpriteInfo> spriteInfoList;
         #endregion
 

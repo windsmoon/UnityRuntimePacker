@@ -6,7 +6,7 @@ namespace Windsmoon.UnityRuntimePacker.BinPacking
     public class NextFitBinPacking : BinPackingBase
     {
         #region Methods
-        public override bool Pack(ref List<Item> itemList, out Vector2Int size)
+        public override bool Pack(List<Item> itemList, out Vector2Int size)
         {
             if (itemList == null || itemList.Count == 0)
             {
@@ -14,10 +14,12 @@ namespace Windsmoon.UnityRuntimePacker.BinPacking
                 return false;
             }
             
+            // todo
             size = new Vector2Int(2048, 2048);
+            int interval = 10;
             int currentBinIndex = 0;
-            int leftHeight = 2047;
-            int currentX = 1;
+            int leftHeight = 2048 - interval;
+            int currentX = interval;
             int currentMaxX = 0;
 
             for (int i = 0; i < itemList.Count; ++i)
@@ -32,19 +34,19 @@ namespace Windsmoon.UnityRuntimePacker.BinPacking
                         currentMaxX = itemSize.x;
                     }
                     
-                    item.Pos = new Vector2Int(currentX, leftHeight);
+                    item.Pos = new Vector2Int(currentX, size.y - leftHeight);
                     itemList[i] = item;
-                    leftHeight -= itemSize.y - 1;
+                    leftHeight = leftHeight - itemSize.y - interval;
                 }
 
                 else
                 {
-                    leftHeight = 2047;
-                    currentX += currentMaxX + 1;
+                    leftHeight = 2048 - interval;
+                    currentX += currentMaxX + interval;
                     currentMaxX = itemSize.x; // do not consider the situation that item height is bigger than bin height;
-                    item.Pos = new Vector2Int(currentX, leftHeight);
+                    item.Pos = new Vector2Int(currentX, size.y - leftHeight);
                     itemList[i] = item;
-                    leftHeight -= itemSize.y - 1;
+                    leftHeight = leftHeight - itemSize.y - interval;;
                 }
             }
             
