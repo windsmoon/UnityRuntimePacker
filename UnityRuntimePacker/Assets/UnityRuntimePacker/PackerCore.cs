@@ -68,6 +68,11 @@ namespace Windsmoon.UnityRuntimePacker
                 UnityEngine.Object.Destroy(templateGO);
             }
         }
+
+        public static Atlas GenerateAtlas(List<Texture2D> texture2DList)
+        {
+            return GenerateAtlas(new List<Item>(texture2DList.Count), texture2DList);
+        }
         
         public static Atlas GenerateAtlas(List<Item> itemList, List<Texture2D> texture2DList)
         {
@@ -119,6 +124,7 @@ namespace Windsmoon.UnityRuntimePacker
                 UnityEngine.Object.Destroy(gameObject);
             }
             
+            Atlas atlas = new Atlas(rt, itemList);
             return null;
         }
 
