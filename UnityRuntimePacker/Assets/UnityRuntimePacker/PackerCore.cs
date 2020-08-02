@@ -34,6 +34,7 @@ namespace Windsmoon.UnityRuntimePacker
                 UnityEngine.Object.Destroy(cameraGO);
                 cameraGO = new GameObject();
                 camera = cameraGO.AddComponent<Camera>();
+                camera.enabled = false;
                 camera.orthographic = true;
                 camera.backgroundColor = Color.black;
                 camera.clearFlags = CameraClearFlags.SolidColor;
@@ -113,6 +114,7 @@ namespace Windsmoon.UnityRuntimePacker
             }
             
             camera.Render();
+            camera.targetTexture = null;
 
             foreach (Material material in materialList)
             {
@@ -125,7 +127,7 @@ namespace Windsmoon.UnityRuntimePacker
             }
             
             Atlas atlas = new Atlas(rt, itemList);
-            return null;
+            return atlas;
         }
 
         private static void SetCamera(RenderTexture rt)

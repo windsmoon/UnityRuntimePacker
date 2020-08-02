@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -10,6 +11,15 @@ public class Test : MonoBehaviour
     #region fields
     [SerializeField]
     private Texture2D testImage;
+    [SerializeField]
+    private RenderTexture rt;
+    #endregion
+
+    #region unity methods
+    private void OnRenderImage(RenderTexture src, RenderTexture dest)
+    {
+        Graphics.Blit(rt, dest);
+    }
     #endregion
     
     #region methods
@@ -35,7 +45,10 @@ public class Test : MonoBehaviour
         PackerCore.PackStrategy = new NextFitBinPacking();
         PackerCore.Init();
         List<Item> itemList = new List<Item>(texture2DList.Count);
-        PackerCore.GenerateAtlas(itemList, texture2DList);
+        Atlas atlas = PackerCore.GenerateAtlas(itemList, texture2DList);
+        PackerCore.UnInit();
+        rt = atlas.Rt;
+        // Graphics.Blit(atlas.Rt, (RenderTexture)null);
     }
     #endregion
 }
