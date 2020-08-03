@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 using Windsmoon.UnityRuntimePacker;
+using Windsmoon.UnityRuntimePacker.Agents;
 using Windsmoon.UnityRuntimePacker.BinPacking;
 
 public class Test : MonoBehaviour
@@ -13,6 +15,8 @@ public class Test : MonoBehaviour
     private Texture2D testImage;
     [SerializeField]
     private RenderTexture rt;
+    [SerializeField]
+    private GameObject canvas;
     #endregion
 
     #region unity methods
@@ -35,19 +39,16 @@ public class Test : MonoBehaviour
     [ContextMenu("Test")]
     private void TestPacker()
     {
-        List<Texture2D> texture2DList = new List<Texture2D>();
-        
-        for (int i = 0; i < 10; ++i)
-        {
-            texture2DList.Add(testImage);
-        }
-        
-        PackerCore.PackStrategy = new NextFitBinPacking();
-        PackerCore.Init();
-        List<Item> itemList = new List<Item>(texture2DList.Count);
-        Atlas atlas = PackerCore.GenerateAtlas(itemList, texture2DList);
-        PackerCore.UnInit();
-        rt = atlas.Rt;
+        List<Image> imageList = new List<Image>();
+        canvas.GetComponentsInChildren<Image>(imageList);
+        BaseAgent baseAgent = new BaseAgent();
+        baseAgent.GenerateAtlasAndReplace(imageList);
+        // PackerCore.PackStrategy = new NextFitBinPacking();
+        // PackerCore.Init();
+        // List<Item> itemList = new List<Item>(texture2DList.Count);
+        // Atlas atlas = PackerCore.GenerateAtlas(itemList, texture2DList);
+        // PackerCore.UnInit();
+        // rt = atlas.Rt;
         // Graphics.Blit(atlas.Rt, (RenderTexture)null);
     }
     #endregion

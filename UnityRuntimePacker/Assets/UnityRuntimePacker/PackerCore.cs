@@ -9,25 +9,35 @@ using Windsmoon.UnityRuntimePacker.BinPacking;
 
 namespace Windsmoon.UnityRuntimePacker
 {
-    public static class PackerCore
+    public class PackerCore
     {
         #region fields
-        private static BinPackingBase packStrategy = new NextFitBinPacking();
-        private static GameObject cameraGO;
-        private static Camera camera;
-        private static Material templateMaterial;
-        private static GameObject templateGO;
+        private BinPackingBase packStrategy;
+        private GameObject cameraGO;
+        private Camera camera;
+        private Material templateMaterial;
+        private GameObject templateGO;
         private static int mainTexPropertyID = Shader.PropertyToID("_MainTex");
         #endregion
 
-        public static BinPackingBase PackStrategy
+        #region properties
+        public BinPackingBase PackStrategy
         {
             get { return packStrategy; }
             set { packStrategy = value; }
         }
+        #endregion
 
+        #region constructors
+
+        public PackerCore(BinPackingBase packStrategy)
+        {
+            this.packStrategy = packStrategy;
+        }
+        #endregion
+        
         #region methods
-        public static void Init()
+        public void Init()
         {
             if (!cameraGO)
             {
@@ -36,7 +46,7 @@ namespace Windsmoon.UnityRuntimePacker
                 camera = cameraGO.AddComponent<Camera>();
                 camera.enabled = false;
                 camera.orthographic = true;
-                camera.backgroundColor = Color.black;
+                camera.backgroundColor = new Color(0, 0, 0, 0);
                 camera.clearFlags = CameraClearFlags.SolidColor;
             }
 
@@ -52,7 +62,7 @@ namespace Windsmoon.UnityRuntimePacker
             }
         }
 
-        public static void UnInit()
+        public void UnInit()
         {
             if (cameraGO)
             {
@@ -70,12 +80,12 @@ namespace Windsmoon.UnityRuntimePacker
             }
         }
 
-        public static Atlas GenerateAtlas(List<Texture2D> texture2DList)
+        public Atlas  GenerateAtlas(List<Texture2D> texture2DList)
         {
             return GenerateAtlas(new List<Item>(texture2DList.Count), texture2DList);
         }
         
-        public static Atlas GenerateAtlas(List<Item> itemList, List<Texture2D> texture2DList)
+        public Atlas GenerateAtlas(List<Item> itemList, List<Texture2D> texture2DList)
         {
             itemList.Clear();
             
@@ -95,6 +105,7 @@ namespace Windsmoon.UnityRuntimePacker
                 return null;
             }
             
+            templateGO.SetActive(true);
             List<GameObject> goList = new List<GameObject>(itemList.Count); // todo : can be cached
             List<Material> materialList = new List<Material>(itemList.Count); // todo : cam be cached
             RenderTexture rt = new RenderTexture(size.x, size.y, 0);
@@ -126,11 +137,12 @@ namespace Windsmoon.UnityRuntimePacker
                 UnityEngine.Object.Destroy(gameObject);
             }
             
+            templateGO.SetActive(false);
             Atlas atlas = new Atlas(rt, itemList);
             return atlas;
         }
 
-        private static void SetCamera(RenderTexture rt)
+        private void SetCamera(RenderTexture rt)
         {
             camera.targetTexture = rt;
             float halfCameraHeight = rt.height / 100f / 2f;
