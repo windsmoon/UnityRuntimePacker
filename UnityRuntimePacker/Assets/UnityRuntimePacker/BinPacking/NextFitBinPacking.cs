@@ -6,7 +6,7 @@ namespace Windsmoon.UnityRuntimePacker.BinPacking
     public class NextFitBinPacking : BinPackingBase
     {
         #region Methods
-        public override bool Pack(List<Item> itemList, out Vector2Int size)
+        public override bool Pack(List<Item> itemList, ref Vector2Int size)
         {
             if (itemList == null || itemList.Count == 0)
             {
@@ -15,12 +15,13 @@ namespace Windsmoon.UnityRuntimePacker.BinPacking
             }
             
             // todo
-            size = new Vector2Int(2048, 2048);
             int interval = 10;
             int currentBinIndex = 0;
-            int leftHeight = 2048 - interval;
+            int leftHeight = size.y - interval;
             int currentX = interval;
             int currentMaxX = 0;
+            int minLeftHeight = size.y;
+            int leftWdith = size.x - interval;
 
             for (int i = 0; i < itemList.Count; ++i)
             {
@@ -37,19 +38,32 @@ namespace Windsmoon.UnityRuntimePacker.BinPacking
                     item.Pos = new Vector2Int(currentX, size.y - leftHeight);
                     itemList[i] = item;
                     leftHeight = leftHeight - itemSize.y - interval;
+
+                    if (leftHeight < minLeftHeight)
+                    {
+                        minLeftHeight = leftHeight;  
+                    }
                 }
 
                 else
                 {
-                    leftHeight = 2048 - interval;
+                    leftWdith = leftWdith - currentMaxX - interval; // another column
+                    leftHeight = size.y - interval;
                     currentX += currentMaxX + interval;
                     currentMaxX = itemSize.x; // do not consider the situation that item height is bigger than bin height;
                     item.Pos = new Vector2Int(currentX, size.y - leftHeight);
                     itemList[i] = item;
                     leftHeight = leftHeight - itemSize.y - interval;;
+                    
+                    if (leftHeight < minLeftHeight)
+                    {
+                        minLeftHeight = leftHeight;
+                    }
                 }
             }
-            
+
+            leftWdith = leftWdith - currentMaxX - interval;
+            size = new Vector2Int(size.x - leftWdith, size.y - minLeftHeight);
             return true;
         }
         #endregion

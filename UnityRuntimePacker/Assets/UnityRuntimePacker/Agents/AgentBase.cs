@@ -13,6 +13,7 @@ namespace Windsmoon.UnityRuntimePacker.Agents
         protected List<Item> itemList;
         protected List<Texture2D> texture2DList;
         protected Atlas atlas;
+        protected FilterMode filterMode = FilterMode.Point;
         #endregion
         
         #region properties
@@ -37,6 +38,7 @@ namespace Windsmoon.UnityRuntimePacker.Agents
         {
             packerCore = new PackerCore(new NextFitBinPacking());
             packerCore.Init();
+            packerCore.Size = new Vector2Int(4096, 512);
         }
         #endregion
         
@@ -59,7 +61,7 @@ namespace Windsmoon.UnityRuntimePacker.Agents
             }
             
             atlas = GenerateAtlas(texture2DList);
-            atlas.RT.filterMode = FilterMode.Bilinear;
+            atlas.RT.filterMode = filterMode;
 
             if (atlas == null)
             {
@@ -69,19 +71,24 @@ namespace Windsmoon.UnityRuntimePacker.Agents
             for (int i = 0; i < imageList.Count; ++i)
             {
                 Image image = imageList[i];
+                Color color = image.color;
+                Material material = image.material;
+                bool isRaycastTarget = image.raycastTarget;                
                 GameObject go = image.gameObject;
                 UnityEngine.Object.DestroyImmediate(image);
                 // todo
                 RawImage rawImage = go.AddComponent<RawImage>();
                 rawImage.uvRect = atlas.GetUV(i);
                 rawImage.texture = atlas.RT;
+                rawImage.color = color;
+                rawImage.material = material;
+                rawImage.raycastTarget = isRaycastTarget;
                 // Texture2D t;
             }
         }
         
         public virtual Atlas GenerateAtlas(List<Texture2D> texture2DList)
         {
-            
             if (itemList == null)
             {
                 itemList = new List<Item>(texture2DList.Count);
@@ -105,9 +112,23 @@ namespace Windsmoon.UnityRuntimePacker.Agents
             return atlas.GetUV(id);
         }
 
+        public void SetFilterMode(FilterMode filterMode)
+        {
+            this.filterMode = filterMode;
+
+            if (atlas != null)
+            {
+                atlas.RT.filterMode = filterMode;
+            }
+        }
+
         public void Release()
         {
-            atlas.Dispose();
+            if (atlas != null)
+            {
+                atlas.Dispose();
+            }
+            
             packerCore.UnInit();
         }
         #endregion

@@ -17,6 +17,8 @@ namespace Windsmoon.UnityRuntimePacker
         private Camera camera;
         private Material templateMaterial;
         private GameObject templateGO;
+        private bool useMiniMap;
+        private Vector2Int size = new Vector2Int(2048, 2048);
         private static int mainTexPropertyID = Shader.PropertyToID("_MainTex");
         #endregion
 
@@ -26,13 +28,20 @@ namespace Windsmoon.UnityRuntimePacker
             get { return packStrategy; }
             set { packStrategy = value; }
         }
+
+        public Vector2Int Size
+        {
+            get => size;
+            set => size = value;
+        }
+
         #endregion
 
         #region constructors
-
-        public PackerCore(BinPackingBase packStrategy)
+        public PackerCore(BinPackingBase packStrategy, bool useMiniMap = false)
         {
             this.packStrategy = packStrategy;
+            this.useMiniMap = useMiniMap;
         }
         #endregion
         
@@ -98,9 +107,7 @@ namespace Windsmoon.UnityRuntimePacker
                 itemList.Add(item); 
             }
 
-            Vector2Int size;
-            
-            if (!packStrategy.Pack(itemList, out size))
+            if (!packStrategy.Pack(itemList, ref size))
             {
                 return null;
             }
@@ -108,7 +115,8 @@ namespace Windsmoon.UnityRuntimePacker
             templateGO.SetActive(true);
             List<GameObject> goList = new List<GameObject>(itemList.Count); // todo : can be cached
             List<Material> materialList = new List<Material>(itemList.Count); // todo : cam be cached
-            RenderTexture rt = new RenderTexture(size.x, size.y, 0);
+            RenderTexture rt = new RenderTexture(size.x, size.y, 0, RenderTextureFormat.ARGB32);
+            rt.useMipMap = useMiniMap;
             SetCamera(rt);
             
             for (int i = 0; i < itemList.Count; ++i)
