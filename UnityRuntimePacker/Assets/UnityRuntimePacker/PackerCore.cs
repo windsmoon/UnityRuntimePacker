@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 using Windsmoon.UnityRuntimePacker.BinPacking;
 
 //http://davikingcode.com/blog/unity-generate-spritesheets-at-runtime/
@@ -13,11 +14,11 @@ namespace Windsmoon.UnityRuntimePacker
     {
         #region fields
         private BinPackingBase packStrategy;
-        private GameObject cameraGO;
-        private Camera camera;
-        private Material templateMaterial;
-        private GameObject templateGO;
-        private bool useMiniMap;
+        // private GameObject cameraGO;
+        // private Camera camera;
+        // private Material templateMaterial;
+        // private GameObject templateGO;
+        // private bool useMiniMap;
         private Vector2Int size = new Vector2Int(2048, 2048);
         private static int mainTexPropertyID = Shader.PropertyToID("_MainTex");
         #endregion
@@ -89,7 +90,12 @@ namespace Windsmoon.UnityRuntimePacker
             }
         }
 
-        public Atlas  GenerateAtlas(List<Texture2D> texture2DList)
+        public bool GenerateAtlas(List<SpriteInfo> spriteInfoList, ref Vector2Int size)
+        {
+            return packStrategy.Pack(spriteInfoList, ref size);
+        }
+
+        public Atlas GenerateAtlas(List<Texture2D> texture2DList)
         {
             return GenerateAtlas(new List<Item>(texture2DList.Count), texture2DList);
         }
@@ -149,7 +155,7 @@ namespace Windsmoon.UnityRuntimePacker
             Atlas atlas = new Atlas(rt, itemList);
             return atlas;
         }
-
+        
         private void SetCamera(RenderTexture rt)
         {
             camera.targetTexture = rt;

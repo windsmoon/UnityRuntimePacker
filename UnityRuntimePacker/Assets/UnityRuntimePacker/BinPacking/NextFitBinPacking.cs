@@ -38,6 +38,11 @@ namespace Windsmoon.UnityRuntimePacker.BinPacking
                     item.Pos = new Vector2Int(currentX, size.y - leftHeight);
                     itemList[i] = item;
                     leftHeight = leftHeight - itemSize.y - interval;
+                    
+                    if (leftHeight < 0)
+                    {
+                        return false;
+                    }
 
                     if (leftHeight < minLeftHeight)
                     {
@@ -53,7 +58,12 @@ namespace Windsmoon.UnityRuntimePacker.BinPacking
                     currentMaxX = itemSize.x; // do not consider the situation that item height is bigger than bin height;
                     item.Pos = new Vector2Int(currentX, size.y - leftHeight);
                     itemList[i] = item;
-                    leftHeight = leftHeight - itemSize.y - interval;;
+                    leftHeight = leftHeight - itemSize.y - interval;
+                    
+                    if (leftHeight < 0)
+                    {
+                        return false;
+                    }
                     
                     if (leftHeight < minLeftHeight)
                     {
@@ -66,6 +76,78 @@ namespace Windsmoon.UnityRuntimePacker.BinPacking
             size = new Vector2Int(size.x - leftWdith, size.y - minLeftHeight);
             return true;
         }
+
+        public override bool Pack(List<SpriteInfo> spriteInfoList, ref Vector2Int size)
+        {
+            if (spriteInfoList == null || spriteInfoList.Count == 0)
+            {
+                size = Vector2Int.zero;
+                return false;
+            }
+            
+            // todo
+            int interval = 10;
+            int currentBinIndex = 0;
+            int leftHeight = size.y - interval;
+            int currentX = interval;
+            int currentMaxX = 0;
+            int minLeftHeight = size.y;
+            int leftWdith = size.x - interval;
+
+            for (int i = 0; i < spriteInfoList.Count; ++i)
+            {
+                SpriteInfo item = spriteInfoList[i];
+                Vector2Int itemSize = item.Size;
+
+                if (leftHeight > itemSize.y)
+                {
+                    if (itemSize.x > currentMaxX)
+                    {
+                        currentMaxX = itemSize.x;
+                    }
+                    
+                    item.Pos = new Vector2Int(currentX, size.y - leftHeight);
+                    spriteInfoList[i] = item;
+                    leftHeight = leftHeight - itemSize.y - interval;
+
+                    if (leftHeight < 0)
+                    {
+                        return false;
+                    }
+
+                    if (leftHeight < minLeftHeight)
+                    {
+                        minLeftHeight = leftHeight;
+                    }
+                }
+
+                else
+                {
+                    leftWdith = leftWdith - currentMaxX - interval; // another column
+                    leftHeight = size.y - interval;
+                    currentX += currentMaxX + interval;
+                    currentMaxX = itemSize.x; // do not consider the situation that item height is bigger than bin height;
+                    item.Pos = new Vector2Int(currentX, size.y - leftHeight);
+                    spriteInfoList[i] = item;
+                    leftHeight = leftHeight - itemSize.y - interval;
+                    
+                    if (leftHeight < 0)
+                    {
+                        return false;
+                    }
+                    
+                    if (leftHeight < minLeftHeight)
+                    {
+                        minLeftHeight = leftHeight;
+                    }
+                }
+            }
+
+            leftWdith = leftWdith - currentMaxX - interval;
+            size = new Vector2Int(size.x - leftWdith, size.y - minLeftHeight);
+            return true;
+        }
+
         #endregion
     }
 }
