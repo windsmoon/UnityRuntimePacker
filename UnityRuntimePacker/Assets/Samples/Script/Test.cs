@@ -26,30 +26,39 @@ public class Test : MonoBehaviour
     // {
     //     Graphics.Blit(rt, dest);
     // }
+
+    private void Awake()
+    {
+        // TestPacker();
+    }
+
     #endregion
     
     #region methods
     [ContextMenu("Test")]
     private void TestPacker()
     {
-        if (baseAgent != null)
-        {
-            this.baseAgent.Release();
-        }
-        
         List<Image> imageList = new List<Image>();
         canvas.GetComponentsInChildren<Image>(imageList);
-        spriteList = new List<Sprite>();
+        spriteList = new List<Sprite>(imageList.Count);
+        List<Texture2D> texture2DList = new List<Texture2D>(imageList.Count);
 
         foreach (Image image in imageList)
         {
             spriteList.Add(image.sprite);
+            texture2DList.Add(image.sprite.texture);
         }
-        
+
         baseAgent = new BaseAgent();
         baseAgent.SetFilterMode(FilterMode.Point);
-        baseAgent.GenerateAtlasAndReplace(imageList);
-        rt = baseAgent.RT;
+
+        if (baseAgent.GenerateAtlas(texture2DList, null))
+        {
+            rt = baseAgent.RenderToRT();
+        }
+
+        baseAgent.ReplaceImage(imageList);
+        baseAgent.Release(true);
     }
     
     [ContextMenu("Rest")]
